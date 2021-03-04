@@ -7,12 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 
 
-
-export default function WelcomeScreen() {
-  
-
-  
-
+export default function WelcomeScreen(props) {  
   return (
       <View style={styles.container}>
         <Text style={styles.title}>Emoji Tic Tac Toe!</Text>
@@ -28,7 +23,7 @@ export default function WelcomeScreen() {
         y: 1
       }}
       style={styles.playButton}>   
-        <TouchableOpacity style={styles.playButton}>
+        <TouchableOpacity style={styles.playButton} onPress={()=>props.navigation.navigate("EmojiSelectionScreen",{currentPlayer:1})}>
             <Text style={styles.playButtonText}>Play!</Text>
         </TouchableOpacity>
         </LinearGradient>
