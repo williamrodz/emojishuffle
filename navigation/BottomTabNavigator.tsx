@@ -26,10 +26,17 @@ export const PlayerContext = createContext();
 
 export default function TabOneNavigator() {
   const [playerOne,setPlayerOne] = useState();
+  const [playerOneScore,setPlayerOneScore] = useState(0);
+
   const [playerTwo,setPlayerTwo] = useState();
+  const [playerTwoScore,setPlayerTwoScore] = useState(0);
+
 
   return (
-    <PlayerContext.Provider value={{playerOne:playerOne,setPlayerOne:setPlayerOne,playerTwo:playerTwo,setPlayerTwo:setPlayerTwo}}>
+    <PlayerContext.Provider value={{playerOne:playerOne,setPlayerOne:setPlayerOne,
+      playerOneScore:playerOneScore,setPlayerOneScore:setPlayerOneScore,
+      playerTwo:playerTwoScore,setPlayerTwo:setPlayerTwo,
+      playerTwoScore:playerTwoScore,setPlayerTwoScore:setPlayerTwoScore}}>
       <TabOneStack.Navigator>
         <TabOneStack.Screen
           name="WelcomeScreen"
