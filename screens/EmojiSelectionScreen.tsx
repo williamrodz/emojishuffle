@@ -93,7 +93,7 @@ export default function EmojiSelectionScreen(props) {
     return (
         <AvatarContext.Provider value={setSelectedEmoji}>
             <View style={styles.container}>
-                <Text style={styles.title}>{`Choose your avatar Player ${props.route.params.currentPlayer} !`}</Text>
+                <Text style={styles.title}>{`Choose your avatar, Player ${props.route.params.currentPlayer}!`}</Text>
                 <Text style={styles.avatar}>{selectedEmoji}</Text>
                 <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
                 <EmojiSelection listOfEmojis={EMOJI_LIST} updateEmoji={setSelectedEmoji}/>
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
         height:EMOJI_BLOCK_SIDE_LENGTH,
         alignItems:'center',
         justifyContent:'center',
-        backgroundColor:'green',
+        backgroundColor:'#34495e',
     },
     emojiText:{
         fontSize:30,

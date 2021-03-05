@@ -41,23 +41,23 @@ export default function TabOneNavigator() {
         <TabOneStack.Screen
           name="WelcomeScreen"
           component={WelcomeScreen}
-          options={{ headerTitle: 'Tab One Title' }}
+          options={{ headerTitle: 'Home' }}
         />      
         <TabOneStack.Screen
           name="GameScreen"
           component={GameScreen}
-          options={{ headerTitle: 'Tab One Title' }}
+          options={{ headerTitle: 'Emoji Tic Tac Toe' }}
         />
         <TabOneStack.Screen
           name="EmojiSelectionScreen"
           component={EmojiSelectionScreen}
-          options={{ headerTitle: 'Tab One Title' }}
+          options={{ headerTitle: 'Player 1 Emoji Selection' }}
         />
         <TabOneStack.Screen
           name="EmojiSelectionScreen2"
           component={EmojiSelectionScreen}
-          options={{ headerTitle: 'Tab One Title' }}
-        />             
+          options={{ headerTitle: 'Player 2 Emoji Selection' }}
+        />                   
       </TabOneStack.Navigator>
     </PlayerContext.Provider>
   );

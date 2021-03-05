@@ -5,7 +5,13 @@ import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 import { LinearGradient } from 'expo-linear-gradient';
 
-
+const CopyrightRow = (props)=>{
+  return(
+    <View style={styles.copyrightRow}>
+      <Text style={styles.copyrightText}>Copyright 2021 - William A. Rodríguez Jiménez</Text>
+    </View>
+  )
+}
 
 export default function WelcomeScreen(props) {  
   return (
@@ -27,6 +33,7 @@ export default function WelcomeScreen(props) {
             <Text style={styles.playButtonText}>Play!</Text>
         </TouchableOpacity>
         </LinearGradient>
+        <CopyrightRow/>
       </View>
   );
 }
@@ -38,6 +45,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor:'white',
   },
   title: {
     fontSize: 20,
@@ -55,5 +63,9 @@ const styles = StyleSheet.create({
   },
   playButtonText:{
       fontSize:20,
-  }
+  },
+  copyrightRow:{
+    position:'absolute',
+    bottom:30,
+  }  
 });

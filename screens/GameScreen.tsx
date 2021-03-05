@@ -82,7 +82,7 @@ const SlotBlock = (props) =>{
             onPress: () => console.log("Cancel Pressed"),
             style: "cancel"
           },
-          { text: "OK", onPress: () => gameState.startNewGame()}
+          { text: "New Game", onPress: () => gameState.startNewGame()}
         ],
         { cancelable: false }
       );      
@@ -171,13 +171,10 @@ export default function TabOneScreen() {
   return (
     <GameContext.Provider value={{currentPlayer:currentPlayer,setCurrentPlayer:setCurrentPlayer,grid:grid,updateCoordWithValue:updateCoordWithValue,gameWon:gameWon,setGameWon:setGameWon,startNewGame}}>
       <View style={styles.container}>
-        <Text style={styles.title}>Tab One</Text>
-        <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
         <View style={styles.scoreBoard}>
-          <View style={styles.scoreBoardRow,styles.scoreBoardTop}><Text style={styles.scoreBoardTitleText}>Score</Text></View>
           <View style={styles.scoreBoardRow}> 
-            <View style={styles.scoreBoardBlock}><Text style={styles.scoreBoardEmojiText}>{`${playerContext.playerOne}`}</Text></View>
-            <View style={styles.scoreBoardBlock}><Text style={styles.scoreBoardEmojiText}>{`${playerContext.playerTwo}`}</Text></View>
+            <View style={{...styles.scoreBoardBlock,borderTopLeftRadius:10}}><Text style={styles.scoreBoardEmojiText}>{`${playerContext.playerOne}`}</Text></View>
+            <View style={{...styles.scoreBoardBlock,borderTopRightRadius:10}}><Text style={styles.scoreBoardEmojiText}>{`${playerContext.playerTwo}`}</Text></View>
           </View>
           <View style={styles.scoreBoardRow}> 
             <View style={{...styles.scoreBoardBlock,borderBottomLeftRadius:10,}}><Text style={styles.scoreText}>{`${playerContext.playerOneScore}`}</Text></View>
@@ -212,19 +209,22 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   instructions:{
-    fontSize:30,
+    fontSize:23,
+    marginTop:10,
   },
   scoreBoard:{
     flexDirection:'column',
+    marginTop:20,
   },
   scoreBoardTop:{
-    backgroundColor:'green',
+    backgroundColor:'#27ae60',
     alignItems:'center',
     borderTopLeftRadius:10,
     borderTopEndRadius:10,
   },
   scoreBoardTitleText:{
     fontSize:30,
+    color:'black',
   },
   scoreBoardRow:{
     flexDirection:'row',
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     fontSize:30,
     width:80,
     height:80,
-    backgroundColor:'blue',
+    backgroundColor:'#2ecc71',
     textAlign:'center',
     alignItems:'center',
     justifyContent:'center',
@@ -266,5 +266,5 @@ const styles = StyleSheet.create({
   },
   slotBlockTextContainer:{
     fontSize:60,
-  }
+  },
 });
