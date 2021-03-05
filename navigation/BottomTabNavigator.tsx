@@ -35,7 +35,7 @@ export default function TabOneNavigator() {
   return (
     <PlayerContext.Provider value={{playerOne:playerOne,setPlayerOne:setPlayerOne,
       playerOneScore:playerOneScore,setPlayerOneScore:setPlayerOneScore,
-      playerTwo:playerTwoScore,setPlayerTwo:setPlayerTwo,
+      playerTwo:playerTwo,setPlayerTwo:setPlayerTwo,
       playerTwoScore:playerTwoScore,setPlayerTwoScore:setPlayerTwoScore}}>
       <TabOneStack.Navigator>
         <TabOneStack.Screen

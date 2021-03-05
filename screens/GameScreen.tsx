@@ -15,7 +15,7 @@ function getCoord(r,c){
   return {r:r,c:c}
 }
 
-function checkForWin(grid,currentPlayer){
+function checkForWin(grid:Object,currentPlayer:String){
 
   // across
   for (var r=0; r< NUM_ROWS; r++){
@@ -54,9 +54,6 @@ const SlotBlock = (props) =>{
   let gameState = useContext(GameContext);
   let playerContext = useContext(PlayerContext);
 
-
-
-
   function updateBlockValue(){
     gameState.updateCoordWithValue(getCoord(props.row,props.col),gameState.currentPlayer)
 
@@ -85,7 +82,7 @@ const SlotBlock = (props) =>{
             onPress: () => console.log("Cancel Pressed"),
             style: "cancel"
           },
-          { text: "OK", onPress: () => console.log("OK Pressed") }
+          { text: "OK", onPress: () => gameState.startNewGame()}
         ],
         { cancelable: false }
       );      
@@ -158,17 +155,35 @@ export default function TabOneScreen() {
     setGrid(newGrid);
   }
 
+  function startNewGame(){
+    setGrid(DEFAULT_GRID);
+    let gamesPlayedSoFar = playerContext.playerOneScore + playerContext.playerTwoScore 
+    if (gamesPlayedSoFar % 2 === 0){
+      setCurrentPlayer(defaultPlayer);
+    } else{
+      setCurrentPlayer(defaultPlayer === playerContext.playerOne ? playerContext.playerTwo : playerContext.playerOne);
+    }
+    setGameWon(false);
+  }  
+
   
 
   return (
-    <GameContext.Provider value={{currentPlayer:currentPlayer,setCurrentPlayer:setCurrentPlayer,grid:grid,updateCoordWithValue:updateCoordWithValue,gameWon:gameWon,setGameWon:setGameWon}}>
+    <GameContext.Provider value={{currentPlayer:currentPlayer,setCurrentPlayer:setCurrentPlayer,grid:grid,updateCoordWithValue:updateCoordWithValue,gameWon:gameWon,setGameWon:setGameWon,startNewGame}}>
       <View style={styles.container}>
         <Text style={styles.title}>Tab One</Text>
         <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-        <Text style={styles.instructions}>{`Score:`}</Text>
-        <Text style={styles.instructions}>{`${playerContext.playerOne} | ${playerContext.playerTwo}`}</Text>
-        <Text style={styles.instructions}>{`${playerContext.playerOneScore} : ${playerContext.playerTwoScore}`}</Text>
-
+        <View style={styles.scoreBoard}>
+          <View style={styles.scoreBoardRow,styles.scoreBoardTop}><Text style={styles.scoreBoardTitleText}>Score</Text></View>
+          <View style={styles.scoreBoardRow}> 
+            <View style={styles.scoreBoardBlock}><Text style={styles.scoreBoardEmojiText}>{`${playerContext.playerOne}`}</Text></View>
+            <View style={styles.scoreBoardBlock}><Text style={styles.scoreBoardEmojiText}>{`${playerContext.playerTwo}`}</Text></View>
+          </View>
+          <View style={styles.scoreBoardRow}> 
+            <View style={{...styles.scoreBoardBlock,borderBottomLeftRadius:10,}}><Text style={styles.scoreText}>{`${playerContext.playerOneScore}`}</Text></View>
+            <View style={{...styles.scoreBoardBlock,borderBottomRightRadius:10,}}><Text style={styles.scoreText}>{`${playerContext.playerTwoScore}`}</Text></View>
+          </View>
+        </View>
         <Text style={styles.instructions}>{`Current Player:`}</Text>
         <Text style={styles.currentPlayer}>{`${currentPlayer}`}</Text>
 
@@ -198,6 +213,38 @@ const styles = StyleSheet.create({
   },
   instructions:{
     fontSize:30,
+  },
+  scoreBoard:{
+    flexDirection:'column',
+  },
+  scoreBoardTop:{
+    backgroundColor:'green',
+    alignItems:'center',
+    borderTopLeftRadius:10,
+    borderTopEndRadius:10,
+  },
+  scoreBoardTitleText:{
+    fontSize:30,
+  },
+  scoreBoardRow:{
+    flexDirection:'row',
+    justifyContent:'center',
+  },
+  scoreBoardBlock:{
+    fontSize:30,
+    width:80,
+    height:80,
+    backgroundColor:'blue',
+    textAlign:'center',
+    alignItems:'center',
+    justifyContent:'center',
+  },
+  scoreBoardEmojiText:{
+    fontSize:50,    
+  },
+  scoreText:{
+    fontSize:40,
+    color:'white',
   },
   currentPlayer:{
     fontSize:40,
