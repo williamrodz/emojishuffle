@@ -128,7 +128,27 @@ function getRandomElementInList(sampleList){
   return sampleList[Math.floor(Math.random() * sampleList.length)];
 }
 
+function getGridString(grid){
+  var stringVisualization = "";
+  for(var r=0; r < NUM_ROWS; r++){
+    for (var c=0; c<NUM_COLS; c++){
+      let valueAtSpot = grid[`row${r}`][`col${c}`]
+      if (valueAtSpot === EMPTY){
+        stringVisualization += "  "
+      } else{
+        stringVisualization += valueAtSpot
+      }
+      if (c < NUM_COLS - 1){
+        stringVisualization += "|"
+      }
+    }
+    if (r < NUM_ROWS - 1){
+      stringVisualization += "\n________\n"
+    }
+  }
 
+  return "BOARD\n"+stringVisualization + "\nENDBOARD";
+}
 
 export default function TabOneScreen() {
   let DEFAULT_ROW = {col0:EMPTY,col1:EMPTY,col2:EMPTY}
@@ -147,22 +167,26 @@ export default function TabOneScreen() {
   function getNextMoveForAIPlayer(grid:Object,player:String){
     // check if there is a one to win
     let emptyCoords = getEmptyCoords(grid);
-    // emptyCoords.forEach((spot,index)=>{
-    //   let gridFilled = getGridWithNewValueAtCoord(spot,player);
-    //   if (checkForWin(gridFilled,player)){
-    //     console.log("win is possible for AI!")
-    //     return spot;
-    //   }
-    // })
-    // Otherwise, return a random empty spot
-    console.log(`${emptyCoords.length} empty spots`);
-    let randomSelection = getRandomElementInList(emptyCoords);
-    console.log(`Random selection is ${randomSelection.r},${randomSelection.c}`);
-    return randomSelection;
+    var nextSpot = getRandomElementInList(emptyCoords);
+
+    for (var i =0; i < emptyCoords.length; i++){
+      let spot = emptyCoords[i];
+      console.log(`AI is evaluating spot at r=${spot.r},c=${spot.c}`)
+      let gridFilled = getGridWithNewValueAtCoord(spot,player);
+      console.log(getGridString(gridFilled));
+      if (checkForWin(gridFilled,player)){
+        console.log("win is possible for AI!")
+        nextSpot = spot;
+        break;
+      }
+    }
+    console.log(`Choice is ${nextSpot.r},${nextSpot.c}`);
+    return nextSpot;
   }  
 
   function makeAImove(){
     let nextMoveLocation =  getNextMoveForAIPlayer(grid,playerContext.playerTwo);
+    console.log(`>>>AI will process move at r=${nextMoveLocation.r},c=${nextMoveLocation.c}`)
     updateCoordWithValue(nextMoveLocation,playerContext.playerTwo);
 
     if (checkForWin(grid,playerContext.playerTwo)){
@@ -180,7 +204,7 @@ export default function TabOneScreen() {
   function getGridWithNewValueAtCoord(coord:Object,value:String){
     let r = coord.r;
     let c = coord.c;
-    var newGrid = {...grid}
+    var newGrid = JSON.parse(JSON.stringify(grid))
     let rowKey = `row${r}`;
     let colKey = `col${c}`;
     newGrid[rowKey][colKey] = currentPlayer;   
