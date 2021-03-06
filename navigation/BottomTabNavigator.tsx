@@ -30,6 +30,7 @@ export default function TabOneNavigator() {
 
   const [playerTwo,setPlayerTwo] = useState();
   const [playerTwoScore,setPlayerTwoScore] = useState(0);
+  const [ties,setTies] = useState(0);
   const [againstAI,setAgainstAI] = useState(false);
 
 
@@ -39,7 +40,8 @@ export default function TabOneNavigator() {
       playerOneScore:playerOneScore,setPlayerOneScore:setPlayerOneScore,
       playerTwo:playerTwo,setPlayerTwo:setPlayerTwo,
       playerTwoScore:playerTwoScore,setPlayerTwoScore:setPlayerTwoScore,
-      againstAI:againstAI,setAgainstAI:setAgainstAI}}>
+      ties:ties,setTies:setTies,
+      againstAI:againstAI,setAgainstAI:setAgainstAI,}}>
       <TabOneStack.Navigator>
         <TabOneStack.Screen
           name="WelcomeScreen"

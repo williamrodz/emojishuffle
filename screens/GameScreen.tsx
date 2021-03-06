@@ -91,15 +91,6 @@ const SlotBlock = (props) =>{
 
   function processMove(){
     updateBlockValue()
-    if (checkForWin(gameState.grid,gameState.currentPlayer)){
-      gameState.processWonGame()
-    }
-    else if (isGridFull(gameState.grid)){
-      gameState.processTie()    
-    }
-    else {
-      gameState.changePlayer()    
-    }
   }
 
   let BORDER_WIDTH = 2
@@ -109,10 +100,12 @@ const SlotBlock = (props) =>{
     borderLeftWidth:props.col > 0 ? BORDER_WIDTH : 0,
 
   }
+  let blockFilled = gameState.grid[`row${props.row}`][`col${props.col}`] !== EMPTY;
+  let blockDisabled = blockFilled || gameState.gameFinished || (gameState.againstAI && gameState.currentPlayer === playerContext.playerTwo)
 
 
   return (
-    <TouchableOpacity disabled={gameState.gameFinished} style={{...styles.slotBlock,...borderStyle}} onPress={processMove} >
+    <TouchableOpacity disabled={blockDisabled} style={{...styles.slotBlock,...borderStyle}} onPress={processMove} >
       <Text style={styles.slotBlockTextContainer}>{gameState.grid[`row${props.row}`][`col${props.col}`]}</Text>
     </TouchableOpacity>
   )
@@ -174,10 +167,13 @@ export default function TabOneScreen() {
   const [grid,setGrid] = useState(DEFAULT_GRID); 
   const [gameFinished,setGameFinished] = useState(false);
   const [againstAI,setAgainstAI] = useState(playerContext.againstAI);
+  const [moveLog,setMoveLog] = useState([]);
+
 
   var randomIndex = Math.round(Math.random() * 2);
 
   let defaultPlayer = randomIndex === 1.0 ? playerContext.playerOne : playerContext.playerTwo;
+  // console.log(`First player will be ${defaultPlayer}`)
   const [currentPlayer,setCurrentPlayer] = useState(defaultPlayer)
 
   function getNextMoveForAIPlayer(grid:Object,player:String){
@@ -201,28 +197,53 @@ export default function TabOneScreen() {
     let nextMoveLocation =  getNextMoveForAIPlayer(grid,playerContext.playerTwo);
     console.log(`>>>AI will process move at r=${nextMoveLocation.r},c=${nextMoveLocation.c}`)
     updateCoordWithValue(nextMoveLocation,playerContext.playerTwo);
-    let gridFilled = getGridWithNewValueAtCoord(nextMoveLocation,playerContext.playerTwo);
 
-    if (checkForWin(gridFilled,playerContext.playerTwo)){
-      console.log(`AI won game`);
-      processWonGame();
-    } else if (isGridFull(gridFilled)){
-      processTie();
-    } 
   }
 
-
+  //Whenever the grid changes, should check for win or tie
   useEffect(()=>{
-    if (againstAI && currentPlayer === playerContext.playerTwo){
-      if (!isGridFull(grid)){
-        makeAImove();
-        changePlayer();
-      } else{
-        processTie();
+    // person won
+    if (!gameFinished && checkForWin(grid,playerContext.playerOne) || checkForWin(grid,playerContext.playerTwo)){
+      processWonGame();
+    // game was tied
+    } else if (isGridFull(grid)){
+      processTie();
+    // move happened
+    } else{
+      if (grid === undefined){
+        alert("NULL!")
       }
- 
+      if (currentPlayer === playerContext.playerOne){
+        changePlayer();
+      }
     }
-  },[currentPlayer])
+  },[grid])
+
+
+
+  useEffect( ()=> {
+    const executeAI = async ()=> {
+      return new Promise((resolve,reject)=>{
+      // process move if AI
+        setTimeout(()=>{
+          console.log(`Last in moveLog is ${moveLog.slice(-1)}`)
+          if (moveLog.slice(-1) !== playerContext.playerTwo){
+            makeAImove();
+            console.log('making move')
+            changePlayer();
+          } else{
+            console.log('race condition')
+          }
+          resolve(true);
+        },2000);
+      });
+    }
+
+    if (againstAI && currentPlayer === playerContext.playerTwo){
+      executeAI();
+    }
+  }    
+  ,[currentPlayer])
 
   function getGridWithNewValueAtCoord(coord:Object,value:String){
     let r = coord.r;
@@ -235,23 +256,27 @@ export default function TabOneScreen() {
 
   }
   const updateCoordWithValue = (coord,value) =>{
-    setGrid(getGridWithNewValueAtCoord(coord,value));
+    if (!gameFinished){
+      setGrid(getGridWithNewValueAtCoord(coord,value));
+      setMoveLog(moveLog.concat(value));
+    } else{
+      console.log('Game is finished. Cannot update board');
+    }
+
   }
 
   function changePlayer(){
     let playerThatGoesNext = playerContext.playerOne === currentPlayer ? playerContext.playerTwo : playerContext.playerOne
+    console.log(`Changing player from ${currentPlayer} to ${playerThatGoesNext}`)
     setCurrentPlayer(playerThatGoesNext)
-    
   }
 
   function processWonGame(){
     setGameFinished(true);
-    let winner;
-    if (currentPlayer === playerContext.playerOne){
-      winner = playerContext.playerOne;
+    let winner = currentPlayer;
+    if (winner === playerContext.playerOne){
       playerContext.setPlayerOneScore(playerContext.playerOneScore+1)
     } else{
-      winner = playerContext.playerTwo;
       playerContext.setPlayerTwoScore(playerContext.playerTwoScore+1)
     }
 
@@ -273,6 +298,7 @@ export default function TabOneScreen() {
 
   function processTie(){
     setGameFinished(true);
+    playerContext.setTies(playerContext.ties+1);
     Alert.alert(
       "Game is tied!",
       `Wow! You both are tough!`,
@@ -286,22 +312,17 @@ export default function TabOneScreen() {
       ],
       { cancelable: false }
     );       
-
   }
 
   function startNewGame(){
-    setGrid(DEFAULT_GRID);
-    let gamesPlayedSoFar = playerContext.playerOneScore + playerContext.playerTwoScore 
-    if (gamesPlayedSoFar % 2 === 0){
-      setCurrentPlayer(defaultPlayer);
-    } else{
-      setCurrentPlayer(defaultPlayer === playerContext.playerOne ? playerContext.playerTwo : playerContext.playerOne);
-    }
     setGameFinished(false);
+    setGrid(DEFAULT_GRID);
+    let nextToPlayFirst = getRandomElementInList([playerContext.playerOne,playerContext.playerTwo])
+    setCurrentPlayer(nextToPlayFirst);
   }  
 
   return (
-    <GameContext.Provider value={{currentPlayer:currentPlayer,setCurrentPlayer:setCurrentPlayer,grid:grid,updateCoordWithValue:updateCoordWithValue,gameFinished:gameFinished,setGameFinished:setGameFinished,startNewGame,getGridWithNewValueAtCoord:getGridWithNewValueAtCoord,againstAI:againstAI,processWonGame:processWonGame,changePlayer:changePlayer,makeAImove:makeAImove,processTie:processTie}}>
+    <GameContext.Provider value={{currentPlayer:currentPlayer,setCurrentPlayer:setCurrentPlayer,grid:grid,updateCoordWithValue:updateCoordWithValue,gameFinished:gameFinished,setGameFinished:setGameFinished,startNewGame,getGridWithNewValueAtCoord:getGridWithNewValueAtCoord,againstAI:againstAI,changePlayer:changePlayer}}>
       <View style={styles.container}>
         <View style={styles.scoreBoard}>
           <View style={styles.scoreBoardRow}> 
