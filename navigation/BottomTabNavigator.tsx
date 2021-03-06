@@ -30,13 +30,16 @@ export default function TabOneNavigator() {
 
   const [playerTwo,setPlayerTwo] = useState();
   const [playerTwoScore,setPlayerTwoScore] = useState(0);
+  const [againstAI,setAgainstAI] = useState(false);
+
 
 
   return (
     <PlayerContext.Provider value={{playerOne:playerOne,setPlayerOne:setPlayerOne,
       playerOneScore:playerOneScore,setPlayerOneScore:setPlayerOneScore,
       playerTwo:playerTwo,setPlayerTwo:setPlayerTwo,
-      playerTwoScore:playerTwoScore,setPlayerTwoScore:setPlayerTwoScore}}>
+      playerTwoScore:playerTwoScore,setPlayerTwoScore:setPlayerTwoScore,
+      againstAI:againstAI,setAgainstAI:setAgainstAI}}>
       <TabOneStack.Navigator>
         <TabOneStack.Screen
           name="WelcomeScreen"

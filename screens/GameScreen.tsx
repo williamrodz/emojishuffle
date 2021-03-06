@@ -7,12 +7,31 @@ import { PlayerContext } from '../navigation/BottomTabNavigator';
 
 let EMPTY = ""
 let NUM_ROWS = 3;
+let NUM_COLS = 3;
 
 
 const GameContext = createContext();
 
 function getCoord(r,c){
   return {r:r,c:c}
+}
+
+function getEmptyCoords(grid:Object){
+  var emptyCoords = [];
+
+  for(var r =0; r < NUM_ROWS; r++){
+    for (var c=0; c< NUM_COLS; c++){
+      let coord = getCoord(r,c)
+      if (getValueFromGrid(coord,grid) === EMPTY){
+        emptyCoords.push(coord);
+      }
+    }
+  }
+  return emptyCoords;
+}
+
+function getValueFromGrid(coord:any,grid:any){
+  return grid[`row${coord.r}`][`col${coord.c}`];
 }
 
 function checkForWin(grid:Object,currentPlayer:String){
@@ -56,40 +75,15 @@ const SlotBlock = (props) =>{
 
   function updateBlockValue(){
     gameState.updateCoordWithValue(getCoord(props.row,props.col),gameState.currentPlayer)
-
   } 
-  function changePlayer(){
-    let playerThatGoesNext = playerContext.playerOne === gameState.currentPlayer ? playerContext.playerTwo : playerContext.playerOne
-    gameState.setCurrentPlayer(playerThatGoesNext)
-  }
 
   function processMove(){
     updateBlockValue()
     if (checkForWin(gameState.grid,gameState.currentPlayer)){
-      gameState.setGameWon(true);
-      if (gameState.currentPlayer === playerContext.playerOne){
-        playerContext.setPlayerOneScore(playerContext.playerOneScore+1)
-      } else{
-        playerContext.setPlayerTwoScore(playerContext.playerTwoScore+1)
-
-      }
-      Alert.alert(
-        "Winner declared!",
-        `Congratulations, ${gameState.currentPlayer}`,
-        [
-          {
-            text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
-            style: "cancel"
-          },
-          { text: "New Game", onPress: () => gameState.startNewGame()}
-        ],
-        { cancelable: false }
-      );      
+      gameState.processWonGame()
     } else {
-      changePlayer()
+      gameState.changePlayer()    
     }
-
   }
 
   let BORDER_WIDTH = 2
@@ -130,6 +124,11 @@ const SlotMachine = (props:any) =>{
 }
 
 
+function getRandomElementInList(sampleList){
+  return sampleList[Math.floor(Math.random() * sampleList.length)];
+}
+
+
 
 export default function TabOneScreen() {
   let DEFAULT_ROW = {col0:EMPTY,col1:EMPTY,col2:EMPTY}
@@ -137,23 +136,89 @@ export default function TabOneScreen() {
   
   const playerContext = useContext(PlayerContext);
   const [grid,setGrid] = useState(DEFAULT_GRID); 
-
   const [gameWon,setGameWon] = useState(false);
+  const [againstAI,setAgainstAI] = useState(playerContext.againstAI);
 
   var randomIndex = Math.round(Math.random() * 2);
 
   let defaultPlayer = randomIndex === 1.0 ? playerContext.playerOne : playerContext.playerTwo;
   const [currentPlayer,setCurrentPlayer] = useState(defaultPlayer)
 
-  const updateCoordWithValue = (coord,value) =>{
+  function getNextMoveForAIPlayer(grid:Object,player:String){
+    // check if there is a one to win
+    let emptyCoords = getEmptyCoords(grid);
+    // emptyCoords.forEach((spot,index)=>{
+    //   let gridFilled = getGridWithNewValueAtCoord(spot,player);
+    //   if (checkForWin(gridFilled,player)){
+    //     console.log("win is possible for AI!")
+    //     return spot;
+    //   }
+    // })
+    // Otherwise, return a random empty spot
+    console.log(`${emptyCoords.length} empty spots`);
+    let randomSelection = getRandomElementInList(emptyCoords);
+    console.log(`Random selection is ${randomSelection.r},${randomSelection.c}`);
+    return randomSelection;
+  }  
+
+  function makeAImove(){
+    let nextMoveLocation =  getNextMoveForAIPlayer(grid,playerContext.playerTwo);
+    updateCoordWithValue(nextMoveLocation,playerContext.playerTwo);
+
+    if (checkForWin(grid,playerContext.playerTwo)){
+      processWonGame()
+    } 
+  }
+
+  useEffect(()=>{
+    if (againstAI && currentPlayer === playerContext.playerTwo){
+      makeAImove();
+      changePlayer();
+    }
+  },[currentPlayer])
+
+  function getGridWithNewValueAtCoord(coord:Object,value:String){
     let r = coord.r;
     let c = coord.c;
     var newGrid = {...grid}
     let rowKey = `row${r}`;
     let colKey = `col${c}`;
-    newGrid[rowKey][colKey] = currentPlayer;
-    setGrid(newGrid);
+    newGrid[rowKey][colKey] = currentPlayer;   
+    return newGrid; 
+
   }
+  const updateCoordWithValue = (coord,value) =>{
+    setGrid(getGridWithNewValueAtCoord(coord,value));
+  }
+
+  function changePlayer(){
+    let playerThatGoesNext = playerContext.playerOne === currentPlayer ? playerContext.playerTwo : playerContext.playerOne
+    setCurrentPlayer(playerThatGoesNext)
+    
+  }
+
+  function processWonGame(){
+    setGameWon(true);
+    if (currentPlayer === playerContext.playerOne){
+      playerContext.setPlayerOneScore(playerContext.playerOneScore+1)
+    } else{
+      playerContext.setPlayerTwoScore(playerContext.playerTwoScore+1)
+
+    }
+    Alert.alert(
+      "Winner declared!",
+      `Congratulations, ${currentPlayer}`,
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        { text: "New Game", onPress: () => startNewGame()}
+      ],
+      { cancelable: false }
+    );    
+  }   
 
   function startNewGame(){
     setGrid(DEFAULT_GRID);
@@ -166,10 +231,8 @@ export default function TabOneScreen() {
     setGameWon(false);
   }  
 
-  
-
   return (
-    <GameContext.Provider value={{currentPlayer:currentPlayer,setCurrentPlayer:setCurrentPlayer,grid:grid,updateCoordWithValue:updateCoordWithValue,gameWon:gameWon,setGameWon:setGameWon,startNewGame}}>
+    <GameContext.Provider value={{currentPlayer:currentPlayer,setCurrentPlayer:setCurrentPlayer,grid:grid,updateCoordWithValue:updateCoordWithValue,gameWon:gameWon,setGameWon:setGameWon,startNewGame,getGridWithNewValueAtCoord:getGridWithNewValueAtCoord,againstAI:againstAI,processWonGame:processWonGame,changePlayer:changePlayer,makeAImove:makeAImove}}>
       <View style={styles.container}>
         <View style={styles.scoreBoard}>
           <View style={styles.scoreBoardRow}> 
