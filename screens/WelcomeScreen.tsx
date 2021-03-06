@@ -86,9 +86,9 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   playButton:{
-      padding:10,
+      padding:5,
       borderRadius:10,
-
+      margin:10,
   },
   playButtonText:{
       fontSize:20,
