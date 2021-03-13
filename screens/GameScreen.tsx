@@ -3,7 +3,7 @@ import { Animated,StyleSheet,Alert } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
-import { PlayerContext } from '../navigation/BottomTabNavigator';
+import { PlayerContext } from '../navigation/AppNavigator';
 
 let EMPTY = ""
 let NUM_ROWS = 3;

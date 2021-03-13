@@ -6,18 +6,9 @@ import GameScreen from '../screens/GameScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
 import LevelSelectionScreen from '../screens/LevelSelectionScreen';
-
 import EmojiSelectionScreen from '../screens/EmojiSelectionScreen';
 
 
-// You can explore the built-in icon families and icons on the web at:
-// https://icons.expo.fyi/
-function TabBarIcon(props: { name: React.ComponentProps<typeof Ionicons>['name']; color: string }) {
-  return <Ionicons size={30} style={{ marginBottom: -3 }} {...props} />;
-}
-
-// Each tab has its own navigation stack, you can read more about this pattern here:
-// https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
 const TabOneStack = createStackNavigator();
 export const PlayerContext = createContext();
 
@@ -29,7 +20,6 @@ export default function TabOneNavigator() {
   const [playerTwoScore,setPlayerTwoScore] = useState(0);
   const [ties,setTies] = useState(0);
   const [againstAI,setAgainstAI] = useState(false);
-
 
 
   return (
