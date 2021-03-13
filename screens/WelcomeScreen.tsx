@@ -11,7 +11,7 @@ import {getRandomElementInList} from '../constants/Functions';
 const CopyrightRow = (props:Object)=>{
   return(
     <View style={styles.copyrightRow}>
-      <Text style={styles.copyrightText}>Copyright 2021 - William A. Rodríguez Jiménez</Text>
+      <Text style={styles.copyrightText}>Made with ❤️ by William A. Rodríguez Jiménez</Text>
     </View>
   )
 }
@@ -116,7 +116,8 @@ export default function WelcomeScreen(props:Object) {
   }
   return (
       <View style={styles.container}>
-        <Text style={styles.title}>Emoji Tic Tac Toe!</Text>
+        <Text style={styles.title}>emoji</Text>
+        <Text style={styles.title}>Tic Tac Toe</Text>
         <BannerRow stopAnimation={stopAnimation}/>
         <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
         <LinearGradient 
@@ -161,10 +162,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor:'white',
   },
   title: {
-    fontSize: 20,
+    textAlign:'center',
+    fontSize: 50,
     fontWeight: 'bold',
   },
   bannerRow:{

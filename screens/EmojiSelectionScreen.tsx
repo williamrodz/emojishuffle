@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     },
     scrollView:{
         flex:1,
-        backgroundColor:'blue',
+        backgroundColor:'#34495e',
         width:'100%',
         height:50,
         flexDirection:'column',

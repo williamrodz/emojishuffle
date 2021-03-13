@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect, createContext, useContext } from 'react';
-import { Animated,StyleSheet,Alert } from 'react-native';
+import React, { useState, useEffect, createContext, useContext } from 'react';
+import { Appearance,StyleSheet,Alert } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Text, View } from '../components/Themed';
 import { PlayerContext } from '../navigation/AppNavigator';
@@ -94,10 +94,12 @@ const SlotBlock = (props) =>{
 
   let BORDER_WIDTH = 2
 
+  const colorScheme = Appearance.getColorScheme();
+
   let borderStyle = {
     borderTopWidth:props.row > 0 ? BORDER_WIDTH : 0,
     borderLeftWidth:props.col > 0 ? BORDER_WIDTH : 0,
-
+    borderColor: colorScheme === 'dark' ? 'white': 'black',
   }
   let blockFilled = gameState.grid[`row${props.row}`][`col${props.col}`] !== EMPTY;
   let blockDisabled = blockFilled || gameState.gameFinished || (gameState.againstAI && gameState.currentPlayer === playerContext.playerTwo)
