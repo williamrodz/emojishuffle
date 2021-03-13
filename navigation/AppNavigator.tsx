@@ -1,10 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
 import { createStackNavigator } from '@react-navigation/stack';
 import React,{createContext, useState} from 'react';
 
 import GameScreen from '../screens/GameScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
 import LevelSelectionScreen from '../screens/LevelSelectionScreen';
 import EmojiSelectionScreen from '../screens/EmojiSelectionScreen';
 
@@ -20,7 +18,6 @@ export default function TabOneNavigator() {
   const [playerTwoScore,setPlayerTwoScore] = useState(0);
   const [ties,setTies] = useState(0);
   const [againstAI,setAgainstAI] = useState(false);
-
 
   return (
     <PlayerContext.Provider value={{playerOne:playerOne,setPlayerOne:setPlayerOne,
@@ -57,19 +54,5 @@ export default function TabOneNavigator() {
         />                   
       </TabOneStack.Navigator>
     </PlayerContext.Provider>
-  );
-}
-
-const TabTwoStack = createStackNavigator();
-
-function TabTwoNavigator() {
-  return (
-    <TabTwoStack.Navigator>
-      <TabTwoStack.Screen
-        name="TabTwoScreen"
-        component={TabTwoScreen}
-        options={{ headerTitle: 'Tab Two Title' }}
-      />
-    </TabTwoStack.Navigator>
   );
 }

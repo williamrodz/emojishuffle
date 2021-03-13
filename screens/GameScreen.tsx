@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect, createContext, useContext } from 'react';
 import { Animated,StyleSheet,Alert } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 import { PlayerContext } from '../navigation/AppNavigator';
 
+import {getRandomElementInList} from '../constants/Functions';
 let EMPTY = ""
 let NUM_ROWS = 3;
 let NUM_COLS = 3;
@@ -129,11 +129,6 @@ const SlotMachine = (props:any) =>{
       <SlotRow rowNumber={2}/>
     </View>
   )
-}
-
-
-function getRandomElementInList(sampleList:Array<any>){
-  return sampleList[Math.floor(Math.random() * sampleList.length)];
 }
 
 function getStringOfGrid(grid:Object){

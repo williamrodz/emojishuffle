@@ -4,7 +4,6 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Text, View } from '../components/Themed';
 import { LinearGradient } from 'expo-linear-gradient';
 
-
 const PlayAIGameButton = (props:Object) =>{
     return(
 <LinearGradient 
@@ -33,7 +32,7 @@ export default function WelcomeScreen(props:Object) {
 
   return (
       <View style={styles.container}>
-        <Text style={styles.title}>Emoji Tic Tac Toe!</Text>
+        <Text style={styles.title}>Which level should the AI be?</Text>
         <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
         <PlayAIGameButton title={'Beginner'} onPress={()=>startAIGame(1)}/>            
         <PlayAIGameButton title={'Intermediate'} onPress={()=>startAIGame(2)}/>            
