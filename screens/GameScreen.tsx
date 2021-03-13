@@ -42,7 +42,6 @@ function isGridFull(grid:Object){
       }
     }
   } 
-  console.log(`Grid is full`);
 return true;
 }
 
@@ -156,10 +155,10 @@ function getStringOfGrid(grid:Object){
     }
   }
 
-  return "BOARD\n"+stringVisualization + "\nENDBOARD";
+  return "\n"+stringVisualization + "\nENDBOARD";
 }
 
-export default function TabOneScreen() {
+export default function GameScreen(props:Object) {
   let DEFAULT_ROW = {col0:EMPTY,col1:EMPTY,col2:EMPTY}
   let DEFAULT_GRID = {row0:{...DEFAULT_ROW},row1:{...DEFAULT_ROW},row2:{...DEFAULT_ROW}}  
   
@@ -170,32 +169,49 @@ export default function TabOneScreen() {
   const [moveLog,setMoveLog] = useState([]);
 
 
-  var randomIndex = Math.round(Math.random() * 2);
 
-  let defaultPlayer = randomIndex === 1.0 ? playerContext.playerOne : playerContext.playerTwo;
-  // console.log(`First player will be ${defaultPlayer}`)
-  const [currentPlayer,setCurrentPlayer] = useState(defaultPlayer)
+  let firstPlayer = props.route.params.randomOneOrTwo === 1.0 ? playerContext.playerOne : playerContext.playerTwo;
+  console.log(`First player will be ${firstPlayer}`)
+  const [currentPlayer,setCurrentPlayer] = useState(firstPlayer)
 
-  function getNextMoveForAIPlayer(grid:Object,player:String){
-    // check if there is a one to win
+  function getNextMoveForAIPlayer(grid:Object,player:String,opponent:String){
     let emptyCoords = getEmptyCoords(grid);
     var nextSpot = getRandomElementInList(emptyCoords);
 
-    for (var i =0; i < emptyCoords.length; i++){
-      let spot = emptyCoords[i];
-      let gridFilled = getGridWithNewValueAtCoord(spot,player);
-      // console.log(getStringOfGrid(gridFilled));
-      if (checkForWin(gridFilled,player)){
-        nextSpot = spot;
-        break;
-      }
+    // console.log(`AI level is ${props.route.params.AIlevel}` )
+
+    if (props.route.params.AIlevel >= 2){
+      // check for AI win
+      for (var i =0; i < emptyCoords.length; i++){
+        let spot = emptyCoords[i];
+        let gridFilledWithPlayer = getGridWithNewValueAtCoord(spot,player);
+
+        if (checkForWin(gridFilledWithPlayer,player)){
+          nextSpot = spot;
+          return nextSpot;
+        }
+      }      
     }
+
+    // prevent opponent from win
+    if (props.route.params.AIlevel >= 3){
+      for (var i =0; i < emptyCoords.length; i++){
+        let spot = emptyCoords[i];
+        let gridFilledWithOpponent = getGridWithNewValueAtCoord(spot,opponent);
+        if (checkForWin(gridFilledWithOpponent,opponent)){
+          nextSpot = spot;
+          return nextSpot;
+        }
+
+      }
+    }    
+
     return nextSpot;
   }  
 
   function makeAImove(){
-    let nextMoveLocation =  getNextMoveForAIPlayer(grid,playerContext.playerTwo);
-    console.log(`>>>AI will process move at r=${nextMoveLocation.r},c=${nextMoveLocation.c}`)
+    let nextMoveLocation =  getNextMoveForAIPlayer(grid,playerContext.playerTwo,playerContext.playerOne);
+    // console.log(`>>>AI will process move at r=${nextMoveLocation.r},c=${nextMoveLocation.c}`)
     updateCoordWithValue(nextMoveLocation,playerContext.playerTwo);
 
   }
@@ -210,10 +226,13 @@ export default function TabOneScreen() {
       processTie();
     // move happened
     } else{
-      if (grid === undefined){
-        alert("NULL!")
-      }
-      if (currentPlayer === playerContext.playerOne){
+      if ((currentPlayer === playerContext.playerOne && moveLog.length !== 0 )){
+        // console.log(`~~Changing from player 1`);
+        changePlayer();
+      }      
+
+      if ((currentPlayer === playerContext.playerTwo && !againstAI)){
+        // console.log(`~~Changing from player 2 `);
         changePlayer();
       }
     }
@@ -226,10 +245,8 @@ export default function TabOneScreen() {
       return new Promise((resolve,reject)=>{
       // process move if AI
         setTimeout(()=>{
-          console.log(`Last in moveLog is ${moveLog.slice(-1)}`)
           if (moveLog.slice(-1) !== playerContext.playerTwo){
             makeAImove();
-            console.log('making move')
             changePlayer();
           } else{
             console.log('race condition')
@@ -251,7 +268,7 @@ export default function TabOneScreen() {
     var newGrid = JSON.parse(JSON.stringify(grid))
     let rowKey = `row${r}`;
     let colKey = `col${c}`;
-    newGrid[rowKey][colKey] = currentPlayer;   
+    newGrid[rowKey][colKey] = value;   
     return newGrid; 
 
   }
@@ -316,15 +333,38 @@ export default function TabOneScreen() {
 
   function startNewGame(){
     setGameFinished(false);
+    setMoveLog([]);
     setGrid(DEFAULT_GRID);
-    let nextToPlayFirst = getRandomElementInList([playerContext.playerOne,playerContext.playerTwo])
+    let nextToPlayFirst = moveLog[0] === playerContext.playerOne ? playerContext.playerTwo : playerContext.playerOne
+    console.log(`nextToPlayFirst ${nextToPlayFirst}`)
     setCurrentPlayer(nextToPlayFirst);
-  }  
+  }
+
+  function resetScoreBoard(){
+    playerContext.setPlayerOneScore(0);
+    playerContext.setPlayerTwoScore(0);
+  }
+
+  function askToResetScoreBoard(){
+    Alert.alert(
+      "Do you want to reset the scoreboard?",
+      "This will set both scores to 0",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        { text: "Reset Scores", onPress: resetScoreBoard}
+      ],
+      { cancelable: false }
+    );   
+  } 
 
   return (
     <GameContext.Provider value={{currentPlayer:currentPlayer,setCurrentPlayer:setCurrentPlayer,grid:grid,updateCoordWithValue:updateCoordWithValue,gameFinished:gameFinished,setGameFinished:setGameFinished,startNewGame,getGridWithNewValueAtCoord:getGridWithNewValueAtCoord,againstAI:againstAI,changePlayer:changePlayer}}>
       <View style={styles.container}>
-        <View style={styles.scoreBoard}>
+        <TouchableOpacity style={styles.scoreBoard} onPress={askToResetScoreBoard}>
           <View style={styles.scoreBoardRow}> 
             <View style={{...styles.scoreBoardBlock,borderTopLeftRadius:10}}><Text style={styles.scoreBoardEmojiText}>{`${playerContext.playerOne}`}</Text></View>
             <View style={{...styles.scoreBoardBlock,borderTopRightRadius:10}}><Text style={styles.scoreBoardEmojiText}>{`${playerContext.playerTwo}`}</Text></View>
@@ -333,7 +373,7 @@ export default function TabOneScreen() {
             <View style={{...styles.scoreBoardBlock,borderBottomLeftRadius:10,}}><Text style={styles.scoreText}>{`${playerContext.playerOneScore}`}</Text></View>
             <View style={{...styles.scoreBoardBlock,borderBottomRightRadius:10,}}><Text style={styles.scoreText}>{`${playerContext.playerTwoScore}`}</Text></View>
           </View>
-        </View>
+        </TouchableOpacity>
         <Text style={styles.instructions}>{`Current Player:`}</Text>
         <Text style={styles.currentPlayer}>{`${currentPlayer}`}</Text>
 

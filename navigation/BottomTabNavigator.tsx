@@ -1,15 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import React,{createContext, useState} from 'react';
 
-import Colors from '../constants/Colors';
-import useColorScheme from '../hooks/useColorScheme';
 import GameScreen from '../screens/GameScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
+import LevelSelectionScreen from '../screens/LevelSelectionScreen';
 
-import { BottomTabParamList, TabOneParamList, TabTwoParamList } from '../types';
 import EmojiSelectionScreen from '../screens/EmojiSelectionScreen';
 
 
@@ -47,7 +44,12 @@ export default function TabOneNavigator() {
           name="WelcomeScreen"
           component={WelcomeScreen}
           options={{ headerTitle: 'Home' }}
-        />      
+        />
+        <TabOneStack.Screen
+          name="LevelSelectionScreen"
+          component={LevelSelectionScreen}
+          options={{ headerTitle: 'Choose AI Level' }}
+        />               
         <TabOneStack.Screen
           name="GameScreen"
           component={GameScreen}

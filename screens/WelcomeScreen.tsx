@@ -19,7 +19,7 @@ export default function WelcomeScreen(props:Object) {
   let playerContext = useContext(PlayerContext);
   function startAIGame(){
     playerContext.setAgainstAI(true);
-    props.navigation.navigate("EmojiSelectionScreen",{currentPlayer:1});
+    props.navigation.navigate("LevelSelectionScreen");
   }
 
   function startTwoPlayerGame(){
